@@ -2,7 +2,13 @@
 // https://docs.swift.org/swift-book
 import Foundation
 
-public struct StocksAPI {
+public protocol IStocksAPI {
+    func fetchChartData(symbol: String, range: ChartRange) async throws -> ChartData?
+    func searchTickers(quote: String, isEquityTypeOnly: Bool) async throws -> [Ticker]
+    func fetchQuotes(symbols: String) async throws -> [Quote]
+}
+
+public struct StocksAPI: IStocksAPI {
 
     private let session = URLSession.shared
     private let jsonDecoder = {
