@@ -59,7 +59,7 @@ public struct ChartData: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.meta = try container.decode(ChartMeta.self, forKey: .meta)
         
-        let timeStamps = try container.decodeIfPresent([Date].self, forKey: .timestamp) ?? []
+        let timestamps = try container.decodeIfPresent([Date].self, forKey: .timestamp) ?? []
         
         if let indicatorContainer = try? container.nestedContainer(keyedBy: IndicatorKeys.self, forKey: .indicators),
            var quotes = try? indicatorContainer.nestedUnkeyedContainer(forKey: .quote) {
@@ -71,12 +71,12 @@ public struct ChartData: Decodable {
                 let opens = try quoteContainer?.decodeIfPresent([Double?].self, forKey: .open) ?? []
                 let closes = try quoteContainer?.decodeIfPresent([Double?].self, forKey: .close) ?? []
                 
-                self.indicators = timeStamps.enumerated().compactMap({
-                    (offset, timeStamp) in
+                self.indicators = timestamps.enumerated().compactMap({
+                    (offset, timestamp) in
                     guard let open = opens[offset], let close = closes[offset], let high = highs[offset], let low = lows[offset] else {
                         return nil
                     }
-                    return .init(timeStamp: timeStamp, open: open, high: high, low: low, close: close)
+                    return .init(timestamp: timestamp, open: open, high: high, low: low, close: close)
                 })
             }
         } else {
@@ -142,14 +142,14 @@ public struct ChartMeta: Decodable {
 
 public struct Indicator: Codable {
     
-    public let timeStamp: Date
+    public let timestamp: Date
     public let open: Double
     public let high: Double
     public let low: Double
     public let close: Double
     
-    public init(timeStamp: Date, open: Double, high: Double, low: Double, close: Double) {
-        self.timeStamp = timeStamp
+    public init(timestamp: Date, open: Double, high: Double, low: Double, close: Double) {
+        self.timestamp = timestamp
         self.open = open
         self.high = high
         self.low = low
